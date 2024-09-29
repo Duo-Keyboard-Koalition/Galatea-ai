@@ -50,7 +50,6 @@ class Home extends Component<{}, { latitude: number | null, longitude: number | 
 
     return (
       <div>
-        <h1>My Google Map</h1>
         {latitude !== null && longitude !== null ? (
           <Map latitude={latitude} longitude={longitude} />
         ) : (
