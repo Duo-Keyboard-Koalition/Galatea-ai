@@ -61,4 +61,4 @@ class MapTransit extends Component<{}, { latitude: number | null, longitude: num
   }
 }
 
-export default Home;
+export default MapTransit;
