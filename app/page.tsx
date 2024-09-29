@@ -1,39 +1,64 @@
-import NavBar from "@/components/NavBar/NavBar";
-import LocationCards from "@/components/LocationCards/LocationCards";
-import Map from "@/components/Map/Map"
+"use client"
+import React, { Component } from "react";
+import Map from "../components/Map";
 
-const locations = [
-  {
-    streetNumber: "4700",
-    street: "Keele St",
-    postcode: "M3J 1P3",
-    city: "",
-    state: "",
-    title: "York University",
-    image: "https://www.yorku.ca/wp-content/uploads/2021/06/vari-drone-1024x682.jpg"
-  },
-  {
-    streetNumber: "75",
-    street: "Laurier Ave E",
-    postcode: "",
-    city: "Ottawa",
-    state: "",
-    title: "uOttawa",
-  },
-];
-
-export default function Home() {
-  return (
-    <div className='flex flex-col gap-4 bg-gray-100 min-h-screen'>
-      <NavBar/>
-      <div className='flex flex-row'>
-        <div className='w-2/5'>
-        <LocationCards locations={locations} />
-        </div>
-        <div className='w-3/5'>
-          <Map locations={locations}/>
-        </div>
-      </div>
-    </div>
-  );
+function getCurrentLocation(): Promise<{ latitude: number, longitude: number }> {
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    } else {
+      reject(new Error("Geolocation is not supported by this browser."));
+    }
+  });
 }
+
+class Home extends Component<{}, { latitude: number | null, longitude: number | null }> {
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      latitude: null,
+      longitude: null,
+    };
+  }
+
+  componentDidMount() {
+    getCurrentLocation()
+      .then((location) => {
+        this.setState({
+          latitude: location.latitude,
+          longitude: location.longitude,
+        });
+      })
+      .catch((error) => {
+        console.error("Error getting location: ", error);
+      });
+  }
+
+  render() {
+
+    const { latitude, longitude } = this.state;
+
+    return (
+      <div>
+        <h1>My Google Map</h1>
+        {latitude !== null && longitude !== null ? (
+          <Map latitude={latitude} longitude={longitude} />
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    );
+  }
+}
+
+export default Home;
