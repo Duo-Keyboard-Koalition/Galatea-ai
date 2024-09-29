@@ -18,7 +18,6 @@ export default function Map({ latitude, longitude }: LatLong) {
                 version: "weekly",
             });
             const { Map } = await loader.importLibrary("maps");
-            const markerLibrary = await loader.importLibrary("marker") as google.maps.MarkerLibrary;
             const position = { lat: latitude, lng: longitude };
             const mapOptions: google.maps.MapOptions = {
                 center: position,
@@ -27,9 +26,21 @@ export default function Map({ latitude, longitude }: LatLong) {
             };
             const map = new Map(mapRef.current as HTMLElement, mapOptions);
 
-            // Fetch the Excel file and add markers
-            const fileUrl = "/traval-excel.xlsx"; 
-            await fetchExcelFile(fileUrl, map, loader, markerLibrary); // Pass markerLibrary here
+            // Example markers
+            const markers = [
+                { position: { lat: latitude, lng: longitude } },
+                // Add more marker positions here
+            ];
+
+            // Add markers lazily
+            map.addListener('idle', () => {
+                markers.forEach(markerData => {
+                    new google.maps.Marker({
+                        position: markerData.position,
+                        map: map,
+                    });
+                });
+            });
         };
 
         initMap();
@@ -37,7 +48,6 @@ export default function Map({ latitude, longitude }: LatLong) {
 
     return <div style={{ height: "100vh", width: "100vw" }} ref={mapRef} />;
 }
-
 // Fetch and process Excel file
 async function fetchExcelFile(fileUrl: string, map: google.maps.Map, loader: Loader, markerLibrary: google.maps.MarkerLibrary) {
     const response = await fetch(fileUrl);
