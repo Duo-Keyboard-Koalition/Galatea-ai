@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Loader } from '@googlemaps/js-api-loader';
 import * as XLSX from 'xlsx';
+import './Map.css'; // Import the CSS file
 
 interface LatLong {
     latitude: number;
@@ -46,7 +47,12 @@ export default function Map({ latitude, longitude }: LatLong) {
         initMap();
     }, [latitude, longitude]);
 
-    return <div style={{ height: "100vh", width: "100vw" }} ref={mapRef} />;
+    return (
+        <div className="map-container">
+            <div className="map-title">Map of Locations</div>
+            <div ref={mapRef} style={{ height: "100%", width: "100%" }} />
+        </div>
+    );
 }
 // Fetch and process Excel file
 async function fetchExcelFile(fileUrl: string, map: google.maps.Map, loader: Loader, markerLibrary: google.maps.MarkerLibrary) {
