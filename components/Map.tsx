@@ -39,21 +39,18 @@ export default function Map({ latitude, longitude }: LatLong) {
 }
 
 // Fetch and process Excel file
-// Fetch and process Excel file
 async function fetchExcelFile(fileUrl: string, map: google.maps.Map, loader: Loader, markerLibrary: google.maps.MarkerLibrary) {
     const response = await fetch(fileUrl);
     const data = await response.arrayBuffer();
     const workbook = XLSX.read(data, { type: 'array' });
-    const firstSheetName = workbook.SheetNames[0]; // Change to the first sheet if necessary
+    const firstSheetName = workbook.SheetNames[0]; 
     const worksheet = workbook.Sheets[firstSheetName];
     const json = XLSX.utils.sheet_to_json(worksheet);
     
-    console.log(`Sheet Data:`, json); // Log the entire sheet data
 
 
     // Assuming the Excel sheet has a column "address"
     const addresses = json.map((row: any) => row.Address);
-    console.log(`Addresses: ${addresses}`); // Log addresses for debugging
 
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -63,7 +60,6 @@ async function fetchExcelFile(fileUrl: string, map: google.maps.Map, loader: Loa
             console.error(`Skipping empty or invalid address: ${address}`);
             continue;
         }
-        console.log(`Geocoding address: ${address}`);
         await geocodeAddress(loader, address, map, markerLibrary);
         await delay(500); // Adding a delay to avoid rate-limiting issues
     }
@@ -76,7 +72,6 @@ async function geocodeAddress(loader: Loader, address: string, map: google.maps.
         const { Geocoder } = await loader.importLibrary("geocoding") as google.maps.GeocodingLibrary;
         const geocoder = new Geocoder();
 
-        console.log(`Geocoding address: ${address}`); // Log the address being geocoded
         geocoder.geocode({ address: address }, async (results, status) => {
             if (status === "OK" && results && results[0]) {
                 console.log(`Successfully geocoded: ${address}`); // Confirm successful geocoding
