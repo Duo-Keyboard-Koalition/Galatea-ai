@@ -69,10 +69,8 @@ async function fetchData(
   loader: Loader,
   markerLibrary: google.maps.MarkerLibrary
 ) {
-  const url = "https://a5gbfxxibf.execute-api.us-east-1.amazonaws.com/Stage/trigger";
-  
   try {
-    const response = await axios.get(url);
+    const response = await axios.get('/api/fetchData');
     console.log(`Status Code: ${response.status}, Response: ${JSON.stringify(response.data)}`);
     
     const data = response.data;
