@@ -15,6 +15,7 @@
     "@nextui-org/system": "^2.2.6",
     "@nextui-org/theme": "^2.2.11",
     "@types/googlemaps": "^3.43.3",
+    "axios": "^1.7.7",
     "framer-motion": "^11.9.0",
     "my-next-app": "file:",
     "next": "14.2.13",
