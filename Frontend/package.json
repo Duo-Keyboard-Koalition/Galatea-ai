@@ -28,6 +28,7 @@
     "react-modal": "^3.16.1",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
