@@ -50,6 +50,27 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        ivory: {
+          100: "#FFFFF0",
+          200: "#FEFCEB",
+        },
+        rose: {
+          50: "#FFF1F2",
+          100: "#FFE4E6",
+          500: "#F43F5E",
+          600: "#E11D48",
+          700: "#BE123C",
+        },
+        earth: {
+          100: "#E5D9C9",
+          200: "#D3C1A8",
+          300: "#C1A987",
+          400: "#AF9166",
+          500: "#9D7945",
+          600: "#7A5F36",
+          700: "#574527",
+          800: "#342B18",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

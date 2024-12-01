@@ -5,8 +5,8 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Galatea.AI - Find Your Perfect Match',
-  description: 'AI-powered dating platform for meaningful connections',
+  title: 'Galatea.AI - Your Perfect AI Girlfriend',
+  description: 'Experience companionship and emotional support with personalized AI girlfriends',
 }
 
 export default function RootLayout({
