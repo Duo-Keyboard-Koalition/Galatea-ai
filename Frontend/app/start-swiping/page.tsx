@@ -15,6 +15,7 @@ const XIcon = ({ className }: { className?: string }) => (
 
 // Mock data for AI profiles
 const aiProfiles = [
+  { id: 1, name: "Mekkana", age: 25, bio: "Goddess of modernity, progress and intellect!", imageUrl: "/girl-profiles/a0.png" },
   { id: 1, name: "Athena", age: 25, bio: "Goddess of wisdom and strategic warfare. Let's have some intellectual battles!", imageUrl: "/girl-profiles/a1.png" },
   { id: 2, name: "Hera", age: 30, bio: "Queen of the gods. Looking for someone who can keep up with divine drama.", imageUrl: "/girl-profiles/a2.png" },
   { id: 3, name: "Aphrodite", age: 28, bio: "Goddess of love and beauty. Swipe right for an unforgettable romance!", imageUrl: "/girl-profiles/a3.png" },]
