@@ -15,7 +15,7 @@ const XIcon = ({ className }: { className?: string }) => (
 
 // Mock data for AI profiles
 const aiProfiles = [
-  { id: 1, name: "Mekkana", age: 25, bio: "Goddess of modernity, progress and intellect!", imageUrl: "/girl-profiles/a0.png" },
+  { id: 0, name: "Mekkana", age: 25, bio: "Goddess of modernity, progress and intellect!", imageUrl: "/girl-profiles/a0.png" },
   { id: 1, name: "Athena", age: 25, bio: "Goddess of wisdom and strategic warfare. Let's have some intellectual battles!", imageUrl: "/girl-profiles/a1.png" },
   { id: 2, name: "Hera", age: 30, bio: "Queen of the gods. Looking for someone who can keep up with divine drama.", imageUrl: "/girl-profiles/a2.png" },
   { id: 3, name: "Aphrodite", age: 28, bio: "Goddess of love and beauty. Swipe right for an unforgettable romance!", imageUrl: "/girl-profiles/a3.png" },]
@@ -56,10 +56,9 @@ export default function StartSwiping() {
                   className="rounded-lg"
                 />
               </div>
-              <h2 className="text-2xl font-semibold text-earth-800">{aiProfiles[currentProfile].name}, {aiProfiles[currentProfile].age}</h2>
-              <p className="text-earth-600 mt-2">{aiProfiles[currentProfile].bio}</p>
+
               
-              <div className="flex justify-center space-x-4 mt-6">
+              <div className="flex justify-center space-x-4 mt-6 mb-6">
                 <Button
                   size="lg"
                   variant="outline"
@@ -79,6 +78,9 @@ export default function StartSwiping() {
                   <span className="sr-only">Swipe Right</span>
                 </Button>
               </div>
+              
+              <h2 className="text-2xl font-semibold text-earth-800">{aiProfiles[currentProfile].name}, {aiProfiles[currentProfile].age}</h2>
+              <p className="text-earth-600 mt-2">{aiProfiles[currentProfile].bio}</p>
             </CardContent>
           </Card>
         </div>
