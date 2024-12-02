@@ -2,11 +2,11 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
 import random
-import replicate
 from groq import Groq
 import uvicorn
 from dotenv import load_dotenv
 import sqlite3
+from fastapi.responses import FileResponse
 
 load_dotenv()
 
@@ -16,8 +16,7 @@ app = FastAPI()
 # Database setup
 DATABASE_URL = "models.db"
 
-# Initialize Replicate and Groq clients
-replicate_client = replicate.Client(api_token=os.environ.get("REPLICATE_API_TOKEN"))
+# Initialize Groq client
 groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
 # Traits for image generation
@@ -126,16 +125,21 @@ async def generate_profile_image():
     # Generate random prompt
     prompt = generate_random_prompt(traits)
 
-    # Generate image using Replicate
-    try:
-        # Ensure you use the correct deployment ID for your model
-        deployment = replicate_client.deployments.get("codejedi-ai/sdxl-mekkana")
-        prediction = deployment.predictions.create(input={"prompt": prompt})
-        prediction.wait()
-        # Ensure you are getting a string URL
-        image_url = prediction.output[0] if isinstance(prediction.output, list) else prediction.output
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate image: {str(e)}")
+    # Check if the "images" folder exists, if not, return an error
+    image_folder = "images"  # Folder containing images (named a0.png, a1.png, etc.)
+    if not os.path.exists(image_folder):
+        raise HTTPException(status_code=500, detail="Images folder does not exist")
+
+    # Get all PNG images in the "images" folder
+    image_files = [f for f in os.listdir(image_folder) if f.endswith(".png")]
+    if not image_files:
+        raise HTTPException(status_code=500, detail="No images found in the folder")
+
+    # Select a random image from the "images" folder
+    selected_image = random.choice(image_files)  # Randomly select an image
+
+    # Build the image URL
+    image_url = f"/images/{selected_image}"  # Return image path as URL
 
     # Generate profile using Groq
     profile = generate_name_and_profile_with_groq(prompt)
@@ -180,6 +184,18 @@ async def check_match(user_profile: str, girl_profile: str):
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Profile Image Generator API powered by Replicate and Groq!"}
+
+# Serve images from the "images" folder
+@app.get("/images/{image_name}")
+async def get_image(image_name: str):
+    # Check if the image exists
+    image_folder = "images"
+    image_path = os.path.join(image_folder, image_name)
+    
+    if not os.path.exists(image_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    return FileResponse(image_path)
 
 if __name__ == "__main__":
     init_db()  # Initialize the database on startup
