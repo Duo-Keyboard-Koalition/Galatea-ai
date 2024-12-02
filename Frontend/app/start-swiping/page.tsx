@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { HeartIcon } from '@heroicons/react/24/solid'
+import { Match } from '@/lib/match'
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
@@ -30,6 +31,7 @@ interface SwipeData {
 interface SwipeResult {
   name: string;
   uuid: string;
+  imageUrl: string;
   status: 'accepted' | 'rejected';
 }
 
@@ -46,10 +48,25 @@ async function getMatches(): Promise<SwipeResult[]> {
   if (!response.ok) {
     throw new Error('Failed to fetch matches');
   }
-  return response.json();
+
+  // loop through the response and check if the status is accepted or rejected
+  // it is in the schema of Match[]
+  // so we need to convert it to SwipeResult[]
+  // turn the response from json to Match[]
+  const matches: Match[] = await response.json()
+  // loop through the matches and return the SwipeResult[]
+  return matches.map(match => ({
+    imageUrl: match.imageUrl,
+    name: match.name,
+    uuid: match.uuid,
+    status: match.matched ? 'accepted' : 'rejected'
+  }))
 }
 
-async function sendSwipeVerdict(sessionId: string, swipe: SwipeData): Promise<void> {
+async function sendSwipeVerdict(sessionId: string | null, swipe: SwipeData): Promise<void> {
+  if (!sessionId) {
+    throw new Error('Session ID not found');
+  }
   const response = await fetch('/api/on-swipe', {
     method: 'POST',
     headers: {
@@ -80,7 +97,7 @@ export default function StartSwiping() {
         setProfiles(fetchedProfiles);
         setIsLoading(false);
       } catch (err) {
-        setError('Failed to load profiles. Please try again later.');
+        setError('Failed to load profiles. Please try again later.' + err);
         setIsLoading(false);
       }
     }
@@ -95,7 +112,7 @@ export default function StartSwiping() {
     const currentProfile = profiles[currentProfileIndex];
     const newSwipe: SwipeData = { profileUuid: currentProfile.uuid, direction };
     setSwipes(prevSwipes => [...prevSwipes, newSwipe]);
-
+    console.log('handleSwipe- Swipes:', swipes);
     try {
       await sendSwipeVerdict(sessionId, newSwipe);
     } catch (err) {
@@ -223,7 +240,16 @@ function Results({ results }: { results: SwipeResult[] }) {
             <Card key={result.uuid} className="w-full">
               <CardContent className="p-6">
                 <h2 className="text-2xl font-semibold text-earth-800">{result.name}</h2>
-                <p className="text-earth-600 mt-2">UUID: {result.uuid}</p>
+                <div className="relative aspect-[3/4] mb-4">
+                <Image
+                    src={result.imageUrl}
+                    alt={result.name}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-lg"
+                  />
+              </div>
+               
                 <p className={`mt-2 ${result.status === 'accepted' ? 'text-green-600' : 'text-red-600'}`}>
                   Status: {result.status}
                 </p>

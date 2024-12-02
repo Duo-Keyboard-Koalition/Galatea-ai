@@ -1,0 +1,37 @@
+[
+  {
+    "uuid": "0",
+    "name": "Mekkana",
+    "age": 25,
+    "bio": "Daughter of Mekkane, Goddess of modernity, progress and intellect! Looking for a smart, innovative and creative partner to build a future together.",
+    "imageUrl": "/girl-profiles/a0.png"
+  },
+  {
+    "uuid": "1",
+    "name": "Athena",
+    "age": 25,
+    "bio": "Goddess of wisdom and strategic warfare. Let's have some intellectual battles!",
+    "imageUrl": "/girl-profiles/a1.png"
+  },
+  {
+    "uuid": "2",
+    "name": "Hera",
+    "age": 30,
+    "bio": "Queen of the gods. Looking for someone who can keep up with divine drama.",
+    "imageUrl": "/girl-profiles/a2.png"
+  },
+  {
+    "uuid": "4",
+    "id": 3,
+    "name": "Aphrodite",
+    "bio": "Goddess of love and beauty. Swipe right for an unforgettable romance!",
+    "imageUrl": "/girl-profiles/a3.png"
+  },
+  {
+    "uuid": "5",
+    "name": "Persephone",
+    "age": 24,
+    "bio": "Queen of the Underworld. Can you handle the dark and mysterious?",
+    "imageUrl": "/girl-profiles/a6.png"
+  }
+]
