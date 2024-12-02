@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,14 +12,6 @@ export default function Home() {
             <Image src="/favicon.png" alt="Galatea.AI Logo" width={40} height={40} />
             <span className="text-2xl font-bold text-earth-700">Galatea.AI</span>
           </Link>
-          <div className="hidden md:flex space-x-6">
-            <Link href="/about" className="text-earth-600 hover:text-rose-700 transition-colors">About</Link>
-            <Link href="/start-swiping" className="text-earth-600 hover:text-rose-700 transition-colors">Start Swiping</Link>
-           </div>
-          <div className="flex space-x-2">
-            <Button variant="ghost" className="text-earth-700 hover:text-rose-700">Log In</Button>
-            <Button className="bg-rose-600 text-ivory-100 hover:bg-rose-700">Sign Up</Button>
-          </div>
         </nav>
       </header>
 
@@ -34,12 +25,9 @@ export default function Home() {
             Galatea.AI brings the Pygmalion myth to life with cutting-edge artificial intelligence.
           </p>
           <div className="max-w-md mx-auto">
-            <form className="flex gap-2">
-              <Input type="email" placeholder="Enter your email" className="flex-grow bg-ivory-100 border-earth-300" />
-              <Button type="submit" size="lg" className="bg-rose-600 text-ivory-100 hover:bg-rose-700">
-                Get Started
-              </Button>
-            </form>
+            <Button size="lg" className="bg-rose-600 text-ivory-100 hover:bg-rose-700 text-xl py-6 px-10 w-full" asChild>
+              <Link href="/start-swiping">Start Swiping</Link>
+            </Button>
           </div>
         </section>
 
