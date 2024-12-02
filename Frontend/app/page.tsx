@@ -16,8 +16,7 @@ export default function Home() {
           <div className="hidden md:flex space-x-6">
             <Link href="/about" className="text-earth-600 hover:text-rose-700 transition-colors">About</Link>
             <Link href="/start-swiping" className="text-earth-600 hover:text-rose-700 transition-colors">Start Swiping</Link>
-            <Link href="/pricing" className="text-earth-600 hover:text-rose-700 transition-colors">Pricing</Link>
-          </div>
+           </div>
           <div className="flex space-x-2">
             <Button variant="ghost" className="text-earth-700 hover:text-rose-700">Log In</Button>
             <Button className="bg-rose-600 text-ivory-100 hover:bg-rose-700">Sign Up</Button>
