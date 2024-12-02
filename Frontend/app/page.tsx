@@ -1,9 +1,46 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { setLocalStorage } from '@/utils/localStorage'
+
+type Profile = {
+  id: number;
+  name: string;
+  age: number;
+  bio: string;
+  imageUrl: string;
+}
 
 export default function Home() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleStartSwiping = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/initiated-swipe', {
+        method: 'POST',
+      })
+      if (!response.ok) {
+        throw new Error('Failed to initiate swipe')
+      }
+      const data = await response.json()
+      console.log(data.message) // Log the message from the backend
+      setLocalStorage('sessionUuid', data.uuid) // Store the UUID in localStorage
+      router.push('/start-swiping')
+    } catch (error) {
+      console.error('Error initiating swipe:', error)
+      // Optionally, you can show an error message to the user here
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-ivory-100 via-rose-50 to-earth-100">
       <header className="bg-ivory-200 bg-opacity-90 shadow-md sticky top-0 z-10">
@@ -25,8 +62,13 @@ export default function Home() {
             Galatea.AI brings the Pygmalion myth to life with cutting-edge artificial intelligence.
           </p>
           <div className="max-w-md mx-auto">
-            <Button size="lg" className="bg-rose-600 text-ivory-100 hover:bg-rose-700 text-xl py-6 px-10 w-full" asChild>
-              <Link href="/start-swiping">Start Swiping</Link>
+            <Button 
+              size="lg" 
+              className="bg-rose-600 text-ivory-100 hover:bg-rose-700 text-xl py-6 px-10 w-full"
+              onClick={handleStartSwiping}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Loading...' : 'Start Swiping'}
             </Button>
           </div>
         </section>
@@ -53,7 +95,7 @@ export default function Home() {
           <h2 className="text-4xl font-bold text-earth-800 mb-6">The Galatea Experience</h2>
           <ol className="list-decimal list-inside space-y-4 text-earth-700 text-lg">
             <li>Sign up and access our AI companion creation tools</li>
-            <li>Customize your AI partner's personality and appearance</li>
+            <li>Customize your AI Girlfriend</li>
             <li>Breathe life into your creation with our advanced AI technology</li>
             <li>Engage in deep, meaningful conversations and shared experiences</li>
             <li>Develop a unique bond with your personalized AI companion</li>
@@ -62,8 +104,13 @@ export default function Home() {
 
         <section className="text-center">
           <h2 className="text-4xl font-bold text-earth-800 mb-6">Ready to Create Your Galatea?</h2>
-          <Button size="lg" className="bg-rose-600 text-ivory-100 hover:bg-rose-700 text-xl py-6 px-10" asChild>
-            <Link href="/start-swiping">Start Swiping</Link>
+          <Button 
+            size="lg" 
+            className="bg-rose-600 text-ivory-100 hover:bg-rose-700 text-xl py-6 px-10"
+            onClick={handleStartSwiping}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Loading...' : 'Start Swiping'}
           </Button>
         </section>
       </main>

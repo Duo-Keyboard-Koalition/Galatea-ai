@@ -22,12 +22,15 @@ interface AIProfile {
   imageUrl: string;
 }
 
-interface Match {
-  uuid: string;
+interface SwipeData {
+  profileUuid: string;
+  direction: 'left' | 'right';
+}
+
+interface SwipeResult {
   name: string;
-  age: number;
-  imageUrl: string;
-  matched: boolean;
+  uuid: string;
+  status: 'accepted' | 'rejected';
 }
 
 async function fetchProfiles(): Promise<AIProfile[]> {
@@ -38,25 +41,26 @@ async function fetchProfiles(): Promise<AIProfile[]> {
   return response.json();
 }
 
-async function sendSwipe(profileUuid: string, direction: 'left' | 'right'): Promise<void> {
-  const response = await fetch('/api/swipe', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ profileUuid, direction }),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to send swipe');
-  }
-}
-
-async function fetchMatches(): Promise<Match[]> {
-  const response = await fetch('/api/matches');
+async function getMatches(): Promise<SwipeResult[]> {
+  const response = await fetch('/api/get-matches');
   if (!response.ok) {
     throw new Error('Failed to fetch matches');
   }
   return response.json();
+}
+
+async function sendSwipeVerdict(sessionId: string, swipe: SwipeData): Promise<void> {
+  const response = await fetch('/api/on-swipe', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ sessionId, swipeData: swipe }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to send swipe verdict');
+  }
+  console.log('Swipe verdict sent successfully');
 }
 
 export default function StartSwiping() {
@@ -65,7 +69,9 @@ export default function StartSwiping() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [swipeResults, setSwipeResults] = useState<SwipeResult[]>([]);
+  const [swipes, setSwipes] = useState<SwipeData[]>([]);
+  const sessionId = localStorage.getItem('sessionUuid'); // Retrieve session ID from local storage
 
   useEffect(() => {
     async function loadProfiles() {
@@ -83,21 +89,33 @@ export default function StartSwiping() {
   }, []);
 
   const handleSwipe = async (direction: 'left' | 'right') => {
+    console.log(`Swiping ${direction}`);
     if (currentProfileIndex >= profiles.length) return;
 
     const currentProfile = profiles[currentProfileIndex];
+    const newSwipe: SwipeData = { profileUuid: currentProfile.uuid, direction };
+    setSwipes(prevSwipes => [...prevSwipes, newSwipe]);
+
     try {
-      await sendSwipe(currentProfile.uuid, direction);
-      console.log(`Swiped ${direction} on ${currentProfile.name}`);
-      if (currentProfileIndex < profiles.length - 1) {
-        setCurrentProfileIndex((prev) => prev + 1);
-      } else {
-        const fetchedMatches = await fetchMatches();
-        setMatches(fetchedMatches);
-        setShowResults(true);
-      }
+      await sendSwipeVerdict(sessionId, newSwipe);
     } catch (err) {
-      setError('Failed to send swipe. Please try again.');
+      console.error('Failed to send swipe verdict:', err);
+      setError('Failed to send swipe verdict. Please try again.');
+    }
+
+    if (currentProfileIndex < profiles.length - 1) {
+      setCurrentProfileIndex((prev) => prev + 1);
+    } else {
+      try {
+        console.log('Fetching matches');
+        const results = await getMatches();
+        console.log('Matches:', results);
+        setSwipeResults(results);
+        setShowResults(true);
+      } catch (err) {
+        console.error('Failed to fetch matches:', err);
+        setError('Failed to fetch matches. Please try again.');
+      }
     }
   }
 
@@ -110,7 +128,7 @@ export default function StartSwiping() {
   }
 
   if (showResults) {
-    return <Results matches={matches} />;
+    return <Results results={swipeResults} />;
   }
 
   if (profiles.length === 0 || currentProfileIndex >= profiles.length) {
@@ -185,7 +203,7 @@ export default function StartSwiping() {
   )
 }
 
-function Results({ matches }: { matches: Match[] }) {
+function Results({ results }: { results: SwipeResult[] }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-ivory-100 via-rose-50 to-earth-100">
       <header className="bg-ivory-200 bg-opacity-90 shadow-md">
@@ -198,24 +216,16 @@ function Results({ matches }: { matches: Match[] }) {
       </header>
 
       <main className="container mx-auto px-6 py-12">
-        <h1 className="text-4xl font-bold text-earth-800 mb-8 text-center">Your Matches</h1>
+        <h1 className="text-4xl font-bold text-earth-800 mb-8 text-center">Your Swipe Results</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {matches.map((match) => (
-            <Card key={match.uuid} className="w-full">
+          {results.map((result) => (
+            <Card key={result.uuid} className="w-full">
               <CardContent className="p-6">
-                <div className="relative aspect-square mb-4">
-                  <Image
-                    src={match.imageUrl}
-                    alt={match.name}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded-lg"
-                  />
-                </div>
-                <h2 className="text-2xl font-semibold text-earth-800">{match.name}, {match.age}</h2>
-                <p className="text-earth-600 mt-2">
-                  {match.matched ? "It's a match!" : "You liked them"}
+                <h2 className="text-2xl font-semibold text-earth-800">{result.name}</h2>
+                <p className="text-earth-600 mt-2">UUID: {result.uuid}</p>
+                <p className={`mt-2 ${result.status === 'accepted' ? 'text-green-600' : 'text-red-600'}`}>
+                  Status: {result.status}
                 </p>
               </CardContent>
             </Card>
@@ -233,4 +243,3 @@ function Results({ matches }: { matches: Match[] }) {
     </div>
   )
 }
-
