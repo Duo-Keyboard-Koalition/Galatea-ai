@@ -1,41 +1,28 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { setLocalStorage } from '@/utils/localStorage'
-
-type Profile = {
-  id: number;
-  name: string;
-  age: number;
-  bio: string;
-  imageUrl: string;
-}
 
 export default function Home() {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const handleStartSwiping = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('/api/initiated-swipe', {
-        method: 'POST',
-      })
+      const response = await fetch('/api/initiated-swipe', { method: 'POST' })
       if (!response.ok) {
-        throw new Error('Failed to initiate swipe')
+        throw new Error('Failed to generate session ID')
       }
-      const data = await response.json()
-      console.log(data.message) // Log the message from the backend
-      setLocalStorage('sessionUuid', data.uuid) // Store the UUID in localStorage
-      router.push('/start-swiping')
+      const { sessionId } = await response.json()
+      router.push(`/start-swiping?session=${sessionId}`)
     } catch (error) {
-      console.error('Error initiating swipe:', error)
-      // Optionally, you can show an error message to the user here
+      console.error('Error starting swiping session:', error)
+      // Here you might want to show an error message to the user
     } finally {
       setIsLoading(false)
     }
@@ -49,24 +36,38 @@ export default function Home() {
             <Image src="/favicon.png" alt="Galatea.AI Logo" width={40} height={40} />
             <span className="text-2xl font-bold text-earth-700">Galatea.AI</span>
           </Link>
+          <div className="hidden md:flex space-x-6">
+            <Link href="/about" className="text-earth-600 hover:text-rose-700 transition-colors">About</Link>
+            <Link href="/profile-setup" className="text-earth-600 hover:text-rose-700 transition-colors">Profile</Link>
+           </div>
+          <div className="flex space-x-2">
+            <Button variant="ghost" className="text-earth-700 hover:text-rose-700">Log In</Button>
+            <Button className="bg-rose-600 text-ivory-100 hover:bg-rose-700">Sign Up</Button>
+          </div>
         </nav>
       </header>
 
       <main className="container mx-auto px-6 py-16">
-        <section className="text-center mb-20">
-          <Image src="/favicon.png" alt="Galatea.AI Logo" width={120} height={120} className="mx-auto mb-8" />
-          <h1 className="text-5xl md:text-7xl font-bold text-earth-800 mb-6">
-            Sculpt Your Perfect <span className="text-rose-600">AI Companion</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-earth-600 mb-10 max-w-3xl mx-auto">
-            Galatea.AI brings the Pygmalion myth to life with cutting-edge artificial intelligence.
-          </p>
-          <div className="max-w-md mx-auto">
+        <section className="relative h-[500px] mb-20 rounded-xl overflow-hidden">
+          <Image
+            src="/mekkana-banner.png"
+            alt="Mekkana Banner"
+            layout="fill"
+            objectFit="cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-center p-6">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+              Sculpt Your Perfect <span className="text-rose-400">AI Companion</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-ivory-100 mb-10 max-w-3xl">
+              Galatea.AI brings the Pygmalion myth to life with cutting-edge artificial intelligence.
+            </p>
             <Button 
-              size="lg" 
-              className="bg-rose-600 text-ivory-100 hover:bg-rose-700 text-xl py-6 px-10 w-full"
-              onClick={handleStartSwiping}
+              onClick={handleStartSwiping} 
               disabled={isLoading}
+              size="lg" 
+              className="bg-rose-600 text-ivory-100 hover:bg-rose-700 text-xl py-6 px-10"
             >
               {isLoading ? 'Loading...' : 'Start Swiping'}
             </Button>
@@ -95,7 +96,7 @@ export default function Home() {
           <h2 className="text-4xl font-bold text-earth-800 mb-6">The Galatea Experience</h2>
           <ol className="list-decimal list-inside space-y-4 text-earth-700 text-lg">
             <li>Sign up and access our AI companion creation tools</li>
-            <li>Customize your AI Girlfriend</li>
+            <li>Customize your AI partner's personality and appearance</li>
             <li>Breathe life into your creation with our advanced AI technology</li>
             <li>Engage in deep, meaningful conversations and shared experiences</li>
             <li>Develop a unique bond with your personalized AI companion</li>
