@@ -1,11 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+
+const bannerOverlayStyle = `
+  .banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(59, 130, 246, 0.7), rgba(168, 85, 247, 0.7));
+  }
+`;
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
@@ -27,6 +35,15 @@ export default function Home() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = bannerOverlayStyle;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-ivory-100 via-rose-50 to-earth-100">
@@ -56,7 +73,8 @@ export default function Home() {
             objectFit="cover"
             priority
           />
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center text-center p-6">
+          <div className="banner-overlay"></div>
+          <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
               Sculpt Your Perfect <span className="text-rose-400">AI Companion</span>
             </h1>
