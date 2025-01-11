@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^3.5.0",
     "@googlemaps/js-api-loader": "^1.16.8",
     "@googlemaps/markerclusterer": "^2.5.3",
     "@heroicons/react": "^2.2.0",

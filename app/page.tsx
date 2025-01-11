@@ -6,7 +6,7 @@ import { HeartIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/ou
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
+import { useUser } from '@auth0/nextjs-auth0/client'
 const bannerOverlayStyle = `
   .banner-overlay {
     position: absolute;
@@ -16,16 +16,17 @@ const bannerOverlayStyle = `
 `;
 
 export default function Home() {
+  
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-
+  const { user, error, isLoading: isUserLoading } = useUser()
   const handleStartSwiping = async () => {
     setIsLoading(true)
     try {
       const response = await fetch('/api/initiated-swipe', { method: 'POST' })
       if (!response.ok) {
         throw new Error('Failed to generate session ID')
-      }
+      } 
       const { sessionId } = await response.json()
       router.push(`/start-swiping?session=${sessionId}`)
     } catch (error) {
@@ -57,9 +58,30 @@ export default function Home() {
             <Link href="/about" className="text-earth-600 hover:text-rose-700 transition-colors">About</Link>
             <Link href="/profile-setup" className="text-earth-600 hover:text-rose-700 transition-colors">Profile</Link>
            </div>
-          <div className="flex space-x-2">
-            <Button variant="ghost" className="text-earth-700 hover:text-rose-700">Log In</Button>
-            <Button className="bg-rose-600 text-ivory-100 hover:bg-rose-700">Sign Up</Button>
+           <div className="flex space-x-2">
+            {!user ? (
+              <>
+                {/* Log In Button */}
+                <Link href="/api/auth/login">
+                  <Button variant="ghost" className="text-earth-700 hover:text-rose-700">Log In</Button>
+                </Link>
+
+                {/* Sign Up Button */}
+                <Link href="/api/auth/login?screen_hint=signup">
+                  <Button className="bg-rose-600 text-ivory-100 hover:bg-rose-700">Sign Up</Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                {/* User Info */}
+                <div className="text-earth-700 font-medium">{`Hi, ${user.name}`}</div>
+
+                {/* Log Out Button */}
+                <Link href="/api/auth/logout">
+                  <Button variant="ghost" className="text-earth-700 hover:text-red-500">Log Out</Button>
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       </header>
